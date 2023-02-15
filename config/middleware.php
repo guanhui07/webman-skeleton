@@ -15,6 +15,7 @@
 return [
     '' => [
         app\middleware\CorsMiddleware::class,
-        // app\middleware\AuthCheck::class,
+        app\middleware\AuthMiddleware::class,
+        app\middleware\Throttle::class,
     ]
 ];

@@ -66,7 +66,8 @@
     "guanhui07/webman-annotation": "dev-master",
     "hyperf/aop-integration": "^1.2",
     "ext-simplexml": "*",
-    "webman/redis-queue": "^1.2"
+    "webman/redis-queue": "^1.2",
+    "yzh52521/webman-throttle": "^1.0"
   }
   ,
   "require-dev": {
