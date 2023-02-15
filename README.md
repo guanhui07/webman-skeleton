@@ -1,5 +1,14 @@
 # webman-skeleton
 
+## install
+```
+composer create-project guanhui07/webman-skeleton-demo
+composer install
+```
+
+
+
+
 ## aop
 https://github.com/hyperf/aop-integration
 
