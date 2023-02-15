@@ -47,6 +47,17 @@ class TestController extends BaseController
     }
 
 
+    public function hello(Request $request)
+    {
+        return response('hello webman')
+            ->header('Content-Type', 'application/json')
+            ->withHeaders([
+                'X-Header-One' => 'Header Value 1',
+                'X-Header-Tow' => 'Header Value 2',
+            ]);
+    }
+
+
     #[RequestMapping(methods: "GET , POST" , path:"/test/test") , Middlewares(CorsMiddleware::class , AuthMiddleware::class)]
     public function test(Request $request)
     {
@@ -63,7 +74,6 @@ class TestController extends BaseController
         echo Carbon::now()->format('Y-m-d');
         // 测试 log
         Log::info('test');
-        // 测试 laravel orm包
         // 测试 laravel orm包
         $ret = UserModel::query()->limit(2)->get(['name', 'id', 'nickname']);
 
