@@ -1,0 +1,97 @@
+{
+  "name": "guanhui07/webman-skeleton-demo",
+  "type": "project",
+  "keywords": [
+    "high performance",
+    "http service"
+  ],
+  "homepage": "http://www.workerman.net",
+  "license": "MIT",
+  "description": "High performance HTTP Service Framework.",
+  "authors": [
+    {
+      "name": "walkor",
+      "email": "walkor@workerman.net",
+      "homepage": "http://www.workerman.net",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "walkor@workerman.net",
+    "issues": "https://github.com/walkor/webman/issues",
+    "forum": "http://wenda.workerman.net/",
+    "wiki": "http://workerman.net/doc/webman",
+    "source": "https://github.com/walkor/webman"
+  },
+  "require": {
+    "php": ">=8.0",
+    "workerman/webman-framework": "^1.3",
+    "monolog/monolog": "^2.0",
+    "webman/auto-route": "^1.0",
+    "psr/container": "^1.1.1",
+    "illuminate/database": "^9.2",
+    "illuminate/pagination": "^9.2",
+    "illuminate/events": "^9.24",
+    "symfony/var-dumper": "^6.1",
+    "intervention/image": "^2.7",
+    "gregwar/captcha": "^1.1",
+    "vlucas/phpdotenv": "^5.4",
+    "php-amqplib/php-amqplib": "^3.0",
+    "workerman/crontab": "^1.0",
+    "phpoffice/phpspreadsheet": "^1.2",
+    "yansongda/pay": "~3.1.",
+    "hzdad/wbsms": "^1.0",
+    "alibabacloud/client": "^1.5",
+    "qiniu/php-sdk": "^7.6",
+    "webman/log": "^1.0",
+    "yzh52521/webman-hash": "^1.0",
+    "yzh52521/webman-mailer": "^1.0",
+    "tinywan/storage": "^0.3",
+    "aliyuncs/oss-sdk-php": "^2.6",
+    "qcloud/cos-sdk-v5": "^2.5",
+    "webman/gateway-worker": "^1.0",
+    "illuminate/redis": "^9.24",
+    "gai871013/ip-location": "^1.1",
+    "endroid/qr-code": "^4.5",
+    "w7corp/easywechat": "^6.7",
+    "inhere/php-validate": "^3.0",
+    "ext-zend-opcache": "*",
+    "webman/console": "^1.2",
+    "workerman/gatewayclient": "^3.0",
+    "ext-curl": "*",
+    "ext-openssl": "*",
+    "yzh52521/webman-event": "^1.0",
+    "php-di/php-di": "^7.0",
+    "firebase/php-jwt": "^6.3",
+    "guanhui07/webman-annotation": "dev-master",
+    "hyperf/aop-integration": "^1.2",
+    "ext-simplexml": "*"
+  }
+  ,
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  },
+  "suggest": {
+    "ext-event": "For better performance. "
+  },
+  "autoload": {
+    "psr-4": {
+      "": "./",
+      "app\\": "./app"
+    },
+    "files": [
+      "./support/helpers.php"
+    ]
+  },
+  "scripts": {
+    "post-package-install": [
+      "support\\Plugin::install"
+    ],
+    "post-package-update": [
+      "support\\Plugin::install"
+    ],
+    "pre-package-uninstall": [
+      "support\\Plugin::uninstall"
+    ]
+  }
+}
