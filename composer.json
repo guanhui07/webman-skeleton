@@ -35,15 +35,17 @@
     "symfony/var-dumper": "^6.1",
     "intervention/image": "^2.7",
     "gregwar/captcha": "^1.1",
+    "guzzlehttp/guzzle": "^7.5",
     "vlucas/phpdotenv": "^5.4",
     "php-amqplib/php-amqplib": "^3.0",
     "workerman/crontab": "^1.0",
     "phpoffice/phpspreadsheet": "^1.2",
     "yansongda/pay": "~3.1.",
+    "predis/predis": "^2.0",
     "hzdad/wbsms": "^1.0",
     "alibabacloud/client": "^1.5",
     "qiniu/php-sdk": "^7.6",
-    "webman/log": "^1.0",
+    "webman/log": "^1.1",
     "yzh52521/webman-hash": "^1.0",
     "yzh52521/webman-mailer": "^1.0",
     "tinywan/storage": "^0.3",
@@ -67,7 +69,11 @@
     "hyperf/aop-integration": "^1.2",
     "ext-simplexml": "*",
     "webman/redis-queue": "^1.2",
-    "yzh52521/webman-throttle": "^1.0"
+    "yzh52521/webman-throttle": "^1.0",
+    "yzh52521/easyhttp": "^1.0",
+    "wen-gg/webman-migrations": "^1.0",
+    "workbunny/webman-rabbitmq": "^1.0",
+    "yzh52521/webman-lock": "^1.0"
   }
   ,
   "require-dev": {

@@ -20,5 +20,14 @@ class MyMailSend implements Consumer
     {
         // 无需反序列化
         var_dump($data); // 输出 ['to' => 'tom@gmail.com', 'content' => 'hello']
+
+        $consumer = $data['consumer'];
+        if(is_string($consumer)){//全局函数
+            $callback = $consumer;
+        }else{ //对象方法
+            $obj = new $consumer[0]();
+            $callback = [$obj, $consumer[1]];
+        }
+        call_user_func_array($callback, [$data]); //下发实际的消费者
     }
 }

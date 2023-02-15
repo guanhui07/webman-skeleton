@@ -9,6 +9,7 @@ use app\utils\Str;
 use GatewayClient\Gateway;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
+use support\Db;
 
 if ( !function_exists('debug')) {
     function debug($v): void
@@ -531,4 +532,77 @@ function createDirectoryIfNeeded($directory): void
         }
     }
 }
+
+if(! function_exists('base64_to_pic')){
+    function base64_to_pic($base64 = '', $content_type = 'image/jpeg'){
+        return "data:{$content_type};base64,{$base64}";
+    }
+}
+
+
+if(!function_exists('import_sql')){
+    function import_sql($sql_path = ''){
+        if(!file_exists($sql_path)) {
+            return "文件不存在！";
+        }
+        if (! $content = file_get_contents($sql_path)) {
+            return "打开文件错误！";
+        }
+        /** 去除注释 */
+        $content = preg_replace('/--.*/i', '', $content);
+        $content = preg_replace('/\/\*.*\*\/(\;)?/i', '', $content);
+        //替换表前缀
+        $original = '`__PREFIX__';
+        $prefix = '';
+        $content = str_replace($original, "`{$prefix}", $content);
+
+        /** 去除空格 创建数组 */
+        $arr = explode(";\n", $content);
+        Db::beginTransaction();
+        try {
+            foreach ($arr as $k => $v)
+            {
+                $v = trim($v);
+                if (empty($v)) {
+                    unset($arr[$k]);
+                }
+                Db::insert($v);
+            }
+            Db::commit();
+        }catch (\Exception $e){
+            Db::rollback();
+            return $e->getMessage();
+        }
+        return true;
+    }
+}
+
+if (!function_exists('input')) {
+    /**
+     * 过滤函数
+     * @param string $key
+     * @param null $default
+     * @return mixed
+     */
+    function input(string $key = '', $default = null)
+    {
+        if (empty($key)) {
+            return \request()->get() + \request()->post();
+        }
+
+        if(str_contains($key, '.')) {
+            list($method, $k) = explode('.', $key);
+            $method = strtolower($method);
+            if(in_array($method, ['get', 'post'])){
+                return \request()->$method($k ?: null);
+            }
+        }
+        return \request()->input($key, $default);
+    }
+}
+
+
+
+
+
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\controller;
 use app\controller\BaseController;
 use app\event\TestEvent;
+use App\exception\RuntimeException;
 use app\middleware\CorsMiddleware;
 use app\middleware\AuthMiddleware;
 use app\middleware\TestMiddleware;
@@ -16,6 +17,8 @@ use app\service\UserService;
 use app\utils\JwtToken;
 use Carbon\Carbon;
 use DI\Attribute\Inject;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Inhere\Validate\Validation;
 use Sunsgne\Annotations\Mapping\RequestMapping;
 use Sunsgne\Annotations\Mapping\Middleware;
@@ -23,6 +26,8 @@ use Sunsgne\Annotations\Mapping\Middlewares;
 use support\Log;
 use support\Redis;
 use support\Request;
+use yzh52521\EasyHttp\Http;
+use yzh52521\WebmanLock\Locker;
 
 class TestController extends BaseController
 {
@@ -164,5 +169,38 @@ class TestController extends BaseController
         echo Carbon::now()->toDateTimeString();
         $data =  di()->get(UserService::class)->first();
         return apiResponse($data);
+    }
+
+    /**
+     * @return string
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @see https://www.workerman.net/plugin/94
+     */
+    #[RequestMapping(methods: "GET", path:"/test/http")]
+    public function http()
+    {
+//        $response = Http::get('http://httpbin.org/get?name=yzh52521', ['age' => 18]);
+
+        $response = Http::post('http://httpbin.org/post', ['name' => 'yzh52521']);
+        echo Carbon::now()->toDateTimeString();
+        $data =  di()->get(UserService::class)->first();
+        return apiResponse($data);
+    }
+
+    #[RequestMapping(methods: "GET", path:"/test/lock")]
+    public function lock()
+    {
+        $key = 'Test:lock_key_test';
+        $lock = Locker::lock($key);
+        if (!$lock->acquire()) {
+            throw new RuntimeException('操作太频繁，请稍后再试');
+        }
+        try {
+            // 修改用户金额
+        } finally {
+            $lock->release();
+        }
+        return apiResponse([]);
     }
 }

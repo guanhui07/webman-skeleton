@@ -9,6 +9,8 @@ use DI\Attribute\Inject;
 use Sunsgne\Annotations\Mapping\RequestMapping;
 use support\Request;
 use Webman\RedisQueue\Client;
+use function Workbunny\WebmanRabbitMQ\sync_publish;
+use process\workbunny\rabbitmq\TestBuilder;
 
 class MqController extends BaseController
 {
@@ -34,7 +36,7 @@ class MqController extends BaseController
 
     /**
      * @param Request $request
-     * @see https://www.workerman.net/plugin/12
+     * @see https://www.workerman.net/plugin/12   redis
      */
     #[RequestMapping(methods: "GET , POST", path: "/mq/produce")]
     public function test(Request $request)
@@ -50,5 +52,15 @@ class MqController extends BaseController
         return response('redis queue test');
     }
 
-
+    /**
+     * @see https://www.workerman.net/plugin/67
+     * @param Request $request
+     * @return \support\Response
+     */
+    #[RequestMapping(methods: "GET , POST", path: "/mq/produce2")]
+    public function rabbit(Request $request)
+    {
+        sync_publish(TestBuilder::instance(), 'abc'); //return bool
+        return response('redis queue test');
+    }
 }
