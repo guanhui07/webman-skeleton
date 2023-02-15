@@ -14,7 +14,7 @@ use Webman\Http\Request;
 * Class StaticFile
 * @package app\middleware
 */
-class Throttle implements MiddlewareInterface
+class ThrottleMiddleware implements MiddlewareInterface
 {
     public function process(Request $request, callable $next):Response
     {
