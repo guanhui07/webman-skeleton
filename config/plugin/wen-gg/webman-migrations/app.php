@@ -31,9 +31,9 @@ return [
             ];
             return $arr[$driver];
         }, env('db_driver', 'mysql')),
-        'host' => env('db_host', '127.0.0.1'),
-        'dbname' => env('db_database', 'test'),
-        'user' => env('db_username', 'root'),
-        'password' => env('db_password', 'root'),
+        'host' => env('DB_HOSTNAME', '127.0.0.1'),
+        'dbname' => env('DB_DATABASE', 'test'),
+        'user' => env('DB_USERNAME', 'root'),
+        'password' => env('DB_PASSWORD', 'root'),
     ],
 ];
