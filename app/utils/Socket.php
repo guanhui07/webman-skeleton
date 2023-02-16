@@ -20,15 +20,15 @@ class Socket
 {
     public static function handle($client_id, $data, $handle)
     {
-        $result              = 'ping';
+        $result = 'ping';
         $client['client_id'] = $client_id;
-        $client['data']      = $data;
+        $client['data'] = $data;
         $client['data_type'] = gettype($data);
-        $client['handle']    = $handle;
+        $client['handle'] = $handle;
         try {
             if (is_string($data)) {
                 $client['data_length'] = strlen($data);
-                $json_data             = json_decode($data, true);
+                $json_data = json_decode($data, true);
                 if (is_array($json_data) || is_object($json_data)) {
                     $client['json_data'] = json_decode($data, true);
                 } else {
@@ -44,8 +44,8 @@ class Socket
         }
         if ($data) {
             // try{
-            $resultData           = self::index($client_id, $data, $handle);
-            $client['function']   = 'index()';
+            $resultData = self::index($client_id, $data, $handle);
+            $client['function'] = 'index()';
             $client['resultData'] = $resultData;
             // 如果出现参数错误，检查$resultData['data']是否输出字符串
             if (!is_string($resultData['data'])) {
@@ -54,9 +54,9 @@ class Socket
             $result = $resultData['data'];
             self::saveLog($client, $client_id);
         } else {
-            $result             = $data;
+            $result = $data;
             $client['function'] = 'NULL';
-            $client['result']   = $data;
+            $client['result'] = $data;
             // save_log($client, $client_id);
         }
         return $result;
@@ -66,21 +66,21 @@ class Socket
     {
         echo 'into index 992';
         // 链路有效时长(s)
-        $client_length        = 120;
-        $result['status']     = 200;
-        $result['message']    = '连接成功';
-        $content['handle']    = $handle;
+        $client_length = 120;
+        $result['status'] = 200;
+        $result['message'] = '连接成功';
+        $content['handle'] = $handle;
         $content['client_id'] = $client_id;
         // 握手事件
         if ($handle === 'onWebSocketConnect') {
             $content['data'] = $data;
-            $user            = [];
+            $user = [];
             if (isset($data['get']['token'])) {
                 $content['token'] = $token = $data['get']['token'];
                 //                $user = KypUserModel::field('id')->where('access_token',stripslashes($token))->find();
                 //todo:
                 $user = Redis::get(stripslashes($data['get']['token']));
-                if (Enviroment::isRoyeeDev()) {
+                if (Enviroment::isLocal()) {
                     $user = UserModel::where('id', 160709)->first();
                 }
                 if ($user) {
@@ -95,77 +95,77 @@ class Socket
                 //关闭连接
                 Gateway::$registerAddress = '127.0.0.1:1236';
                 Gateway::closeClient($client_id);
-                $result['status']  = 404;
+                $result['status'] = 404;
                 $result['message'] = 'token无效或已过期';
                 return $result;
             }
             // 缓存数据只保留1天
-            Redis::set('client_user_id_'.$client_id, $user['id'], 86400);
-            Redis::set('client_id_'.$user['id'], $client_id, 86400);
+            Redis::set('client_user_id_' . $client_id, $user['id'], 86400);
+            Redis::set('client_id_' . $user['id'], $client_id, 86400);
         }
         // 消息事件
         if ($handle === 'onMessage') {
-            $data   = json_decode($data, true);
-            $userId = Redis::get('client_user_id_'.$client_id);
+            $data = json_decode($data, true);
+            $userId = Redis::get('client_user_id_' . $client_id);
             if (!$userId) {
                 //关闭连接
                 Gateway::$registerAddress = '127.0.0.1:1236';
                 Gateway::closeClient($client_id);
-                $result['status']  = 404;
+                $result['status'] = 404;
                 $result['message'] = 'token无效或已过期';
                 return $result;
             }
             if (isset($data['blindbox_id'])) {
                 // 查询是否存在上次在线盲盒id，存在则先移出分组
-                $lastClientUserBlindboxId = Redis::get('client_user_blindbox_id_'.$userId);
+                $lastClientUserBlindboxId = Redis::get('client_user_blindbox_id_' . $userId);
                 if ($lastClientUserBlindboxId) {
-                    $lastGroupName = 'client_blindbox_id_'.$lastClientUserBlindboxId;
+                    $lastGroupName = 'client_blindbox_id_' . $lastClientUserBlindboxId;
                     Gateway::leaveGroup($client_id, $lastGroupName);
                 }
                 // 设置当前最新在线盲盒id
-                Redis::set('client_user_blindbox_id_'.$userId, $data['blindbox_id'], 86400);
+                Redis::set('client_user_blindbox_id_' . $userId, $data['blindbox_id'], 86400);
                 $content['blindbox_id'] = $data['blindbox_id'];
-                $groupName              = 'client_blindbox_id_'.$data['blindbox_id'];
+                $groupName = 'client_blindbox_id_' . $data['blindbox_id'];
                 Gateway::joinGroup($client_id, $groupName);
             }
             if (isset($data['room_id'])) {
                 // 查询是否存在上次在线盲盒id，存在则先移出分组
-                $lastClientUserRoomId = Redis::get('client_user_room_id_'.$userId);
+                $lastClientUserRoomId = Redis::get('client_user_room_id_' . $userId);
                 if ($lastClientUserRoomId) {
-                    $lastGroupName = 'client_room_id_'.$lastClientUserRoomId;
+                    $lastGroupName = 'client_room_id_' . $lastClientUserRoomId;
                     Gateway::leaveGroup($client_id, $lastGroupName);
                 }
                 // 设置当前最新在线盲盒房间id
-                Redis::set('client_user_room_id_'.$userId, $data['room_id'], 86400);
+                Redis::set('client_user_room_id_' . $userId, $data['room_id'], 86400);
                 $content['room_id'] = $data['room_id'];
-                $groupName          = 'client_room_id_'.$data['room_id'];
+                $groupName = 'client_room_id_' . $data['room_id'];
                 Gateway::joinGroup($client_id, $groupName);
             }
             if (isset($data['order_id'])) {
                 // 查询是否存在订单id，存在则先移出分组
-                $lastClientUserOrderId = Redis::get('client_user_order_id_'.$userId);
+                $lastClientUserOrderId = Redis::get('client_user_order_id_' . $userId);
                 if ($lastClientUserOrderId) {
-                    $lastGroupName = 'client_order_id_'.$lastClientUserOrderId;
+                    $lastGroupName = 'client_order_id_' . $lastClientUserOrderId;
                     Gateway::leaveGroup($client_id, $lastGroupName);
                 }
                 // 设置当前最新在线盲盒id
-                Redis::set('client_user_order_id_'.$userId, $data['order_id'], 86400);
+                Redis::set('client_user_order_id_' . $userId, $data['order_id'], 86400);
                 $content['order_id'] = $data['order_id'];
-                $groupName           = 'client_order_id_'.$data['order_id'];
+                $groupName = 'client_order_id_' . $data['order_id'];
                 Gateway::joinGroup($client_id, $groupName);
             }
             $content['data'] = $data;
         }
         // 关闭事件
         if ($handle === 'onClose') {
-            $userId = Redis::get('client_user_id_'.$client_id);
+            $userId = Redis::get('client_user_id_' . $client_id);
             if ($userId) {
-                Redis::del('client_user_id_'.$client_id);
-                Redis::del('client_id_'.$userId);
-                Redis::del('client_user_blindbox_id_'.$userId);
-                Redis::del('client_user_room_id_'.$userId);
-                Redis::del('client_blindbox_id_'.$userId);
-                Redis::del('client_room_id_'.$userId);
+                Redis::del('client_user_id_' . $client_id);
+                Redis::del('client_id_' . $userId);
+                Redis::del('client_user_blindbox_id_' . $userId);
+                Redis::del('client_user_room_id_' . $userId);
+                Redis::del('client_blindbox_id_' . $userId);
+                Redis::del('client_room_id_' . $userId);
             }
             // $userId = Redis::get('client_user_id_'.$client_id);
             // if($userId){
@@ -173,7 +173,7 @@ class Socket
             // }
         }
         $result['content'] = $content;
-        $result['data']    = json_encode($result);
+        $result['data'] = json_encode($result);
         // self::saveLog($result, $client_id);
         return $result;
     }
@@ -186,11 +186,11 @@ class Socket
      */
     private static function client($params): void
     {
-        $client_id         = $fd = 1;
-        $uid               = 17;
-        $group             = $groupName = 'test_group';
+        $client_id = $fd = 1;
+        $uid = 17;
+        $group = $groupName = 'test_group';
         $exclude_client_id = $raw = null;
-        $data              = ['abc' => 'test'];
+        $data = Json::encode(['abc' => 'test']);
         // 发送数据
         Gateway::$registerAddress = '127.0.0.1:1236';
         // 绑定uid fd
@@ -212,7 +212,7 @@ class Socket
         // 直接发送给指定client_id
         Gateway::sendToClient($fd, $data);
         // 发送给全部
-        $result['code']    = 404;
+        $result['code'] = 404;
         $result['message'] = "{$client_id}下线了 ";
         GateWay::sendToAll(json_encode($result, JSON_UNESCAPED_UNICODE));
         // 获得该组所有在线成员数据
@@ -261,7 +261,6 @@ class Socket
 
     private static function saveLog($data, $client_id)
     {
-        return true;
         //        return save_log($data, 'public/log/socket/handle_' . $client_id . '.log');
     }
 }
