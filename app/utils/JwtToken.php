@@ -9,6 +9,7 @@ use app\traits\BaseRequest;
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Shopwwi\LaravelCache\Cache;
 use support\Redis;
 
 class JwtToken
@@ -38,7 +39,7 @@ class JwtToken
         $jwt_token_cache_key = md5($jwt_token . time() . str_random(10));
         $data['jwt_token'] = $jwt_token;
 
-        Cache::set($jwt_token_cache_key, $data, $this->expire_token_time);
+        Cache::put($jwt_token_cache_key, $data, $this->expire_token_time);
         return $jwt_token_cache_key;
     }
 
