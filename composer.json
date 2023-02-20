@@ -74,7 +74,8 @@
     "wen-gg/webman-migrations": "^1.0",
     "workbunny/webman-rabbitmq": "^1.0",
     "yzh52521/webman-lock": "^1.0",
-    "shopwwi/laravel-cache": "^1.0"
+    "shopwwi/laravel-cache": "^1.0",
+    "yzh52521/webman-task": "dev-lv"
   }
   ,
   "require-dev": {
