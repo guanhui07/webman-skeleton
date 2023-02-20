@@ -203,4 +203,29 @@ class TestController extends BaseController
         }
         return apiResponse([]);
     }
+
+    /**
+     * 动态计划任务
+     * @return string
+     * @see https://github.com/yzh52521/webman-task/tree/main#%E6%B7%BB%E5%8A%A0%E4%BB%BB%E5%8A%A1
+     */
+    #[RequestMapping(methods: "GET", path:"/test/crotnab")]
+    public function crontabCreated()
+    {
+        $param = [
+            'method' => 'request',//计划任务列表
+            'args'   => [
+                'title' => 'test ',
+                'type' => 1,
+                'rule' => '*/3 * * * * *',
+                'target' => 'php webman test',
+                'remark' => '备注',
+                'sort' => 1,
+                'status' => 1,
+                'singleton' => 0, //是否单次执行 [0 是 1 不是]
+            ],//参数
+        ];
+        $result= \yzh52521\Task\Client::instance()->request($param);
+        return apiResponse($result);
+    }
 }
