@@ -2,7 +2,7 @@
 
 ## install
 ```
-composer create-project guanhui07/webman-skeleton-demo
+composer create-project guanhui07/webman-skeleton
 composer install
 ```
 
