@@ -7,3 +7,4 @@
 /tests/.phpunit.result.cache
 composer.lock
 /runtime
+/build
