@@ -67,6 +67,7 @@
     "firebase/php-jwt": "^6.3",
     "guanhui07/webman-annotation": "dev-master",
     "hyperf/aop-integration": "^1.2",
+    "hyperf/utils": "^2.2",
     "ext-simplexml": "*",
     "webman/redis-queue": "^1.2",
     "yzh52521/webman-throttle": "^1.0",
