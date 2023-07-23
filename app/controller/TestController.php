@@ -27,6 +27,7 @@ use support\Log;
 use support\Redis;
 use support\Request;
 use yzh52521\EasyHttp\Http;
+use yzh52521\mailer\Mailer;
 use yzh52521\WebmanLock\Locker;
 
 class TestController extends BaseController
@@ -227,5 +228,17 @@ class TestController extends BaseController
         ];
         $result= \yzh52521\Task\Client::instance()->request($param);
         return apiResponse($result);
+
+
+    }
+
+    public function testEmail()
+    {
+        Mailer::setFrom('10086@qq.com')
+            ->setTo('your-mail@domain.com')
+            ->setSubject('纯文本测试')
+            ->setTextBody('欢迎您使用webman-mailer')
+            ->send();
+        return apiResponse([]);
     }
 }

@@ -47,7 +47,7 @@
     "qiniu/php-sdk": "^7.6",
     "webman/log": "^1.1",
     "yzh52521/webman-hash": "^1.0",
-    "yzh52521/webman-mailer": "^1.0",
+    "yzh52521/webman-mailer": "^1.1",
     "tinywan/storage": "^0.3",
     "aliyuncs/oss-sdk-php": "^2.6",
     "qcloud/cos-sdk-v5": "^2.5",
