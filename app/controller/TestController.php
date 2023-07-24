@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 
 namespace app\controller;
-use app\controller\BaseController;
+
 use app\event\TestEvent;
 use App\exception\RuntimeException;
-use app\middleware\CorsMiddleware;
 use app\middleware\AuthMiddleware;
-use app\middleware\TestMiddleware;
+use app\middleware\CorsMiddleware;
 use app\model\UserModel;
 use app\service\entity\ExchGiftInfo;
 use app\service\entity\TestEntity;
@@ -20,9 +19,10 @@ use DI\Attribute\Inject;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Inhere\Validate\Validation;
-use Sunsgne\Annotations\Mapping\RequestMapping;
-use Sunsgne\Annotations\Mapping\Middleware;
+use Playcat\Queue\Manager;
+use Playcat\Queue\Protocols\ProducerData;
 use Sunsgne\Annotations\Mapping\Middlewares;
+use Sunsgne\Annotations\Mapping\RequestMapping;
 use support\Log;
 use support\Redis;
 use support\Request;
@@ -44,7 +44,7 @@ class TestController extends BaseController
      * 测试构造参数依赖注入
      * 测试使用中间件
      *
-     * @param  TestService  $s
+     * @param TestService $s
      */
     public function __construct(TestService $s)
     {
@@ -64,7 +64,7 @@ class TestController extends BaseController
     }
 
 
-    #[RequestMapping(methods: "GET , POST" , path:"/test/test") , Middlewares(CorsMiddleware::class , AuthMiddleware::class)]
+    #[RequestMapping(methods: "GET , POST", path: "/test/test"), Middlewares(CorsMiddleware::class, AuthMiddleware::class)]
     public function test(Request $request)
     {
         // 测试 request
@@ -84,7 +84,7 @@ class TestController extends BaseController
         $ret = UserModel::query()->limit(2)->get(['name', 'id', 'nickname']);
 
         //测试redis
-        Redis::setex('test_key',22,45);
+        Redis::setex('test_key', 22, 45);
 //        debug(Redis::->get('test_key'));
 
         // 测试 DI
@@ -96,14 +96,14 @@ class TestController extends BaseController
         return json(['code' => 0, 'data' => $data]);
     }
 
-    #[RequestMapping(methods: "GET , POST" , path:"/test/event")]
+    #[RequestMapping(methods: "GET , POST", path: "/test/event")]
     public function event(Request $request)
     {
-        event('test',[new TestEvent(['test'=>'event data'])]);
+        event('test', [new TestEvent(['test' => 'event data'])]);
         return json(['code' => 0, 'data' => 'ok']);
     }
 
-    #[RequestMapping(methods: "GET , POST" , path:"/test/validate")]
+    #[RequestMapping(methods: "GET , POST", path: "/test/validate")]
     public function validate(Request $request)
     {
         $v = Validation::check($request->all(), [
@@ -126,7 +126,7 @@ class TestController extends BaseController
     /**
      * 测试 dto
      */
-    #[RequestMapping(methods: 'GET , POST', path:'/test/dto')]
+    #[RequestMapping(methods: 'GET , POST', path: '/test/dto')]
     public function dto()
     {
         arrayToEntity([
@@ -151,12 +151,12 @@ class TestController extends BaseController
         return $testEntity->gift->id;
     }
 
-    #[RequestMapping(methods: 'GET , POST', path:'/test/token')]
+    #[RequestMapping(methods: 'GET , POST', path: '/test/token')]
     public function token(): string
     {
         $token = di()->get(JwtToken::class)->encode([
-            'uid'=>27,
-            'name'=>'test',
+            'uid' => 27,
+            'name' => 'test',
         ]);
 //        dd($token);
 //        $token = '1813bef4c03caef6ec45380a7246d110';
@@ -164,11 +164,11 @@ class TestController extends BaseController
         return apiResponse($arr);
     }
 
-    #[RequestMapping(methods: "GET", path:"/test/aop")]
+    #[RequestMapping(methods: "GET", path: "/test/aop")]
     public function aop()
     {
         echo Carbon::now()->toDateTimeString();
-        $data =  di()->get(UserService::class)->first();
+        $data = di()->get(UserService::class)->first();
         return apiResponse($data);
     }
 
@@ -178,18 +178,18 @@ class TestController extends BaseController
      * @throws NotFoundException
      * @see https://www.workerman.net/plugin/94
      */
-    #[RequestMapping(methods: "GET", path:"/test/http")]
+    #[RequestMapping(methods: "GET", path: "/test/http")]
     public function http()
     {
 //        $response = Http::get('http://httpbin.org/get?name=yzh52521', ['age' => 18]);
 
         $response = Http::post('http://httpbin.org/post', ['name' => 'yzh52521']);
         echo Carbon::now()->toDateTimeString();
-        $data =  di()->get(UserService::class)->first();
+        $data = di()->get(UserService::class)->first();
         return apiResponse($data);
     }
 
-    #[RequestMapping(methods: "GET", path:"/test/lock")]
+    #[RequestMapping(methods: "GET", path: "/test/lock")]
     public function lock()
     {
         $key = 'Test:lock_key_test';
@@ -210,12 +210,12 @@ class TestController extends BaseController
      * @return string
      * @see https://github.com/yzh52521/webman-task/tree/main#%E6%B7%BB%E5%8A%A0%E4%BB%BB%E5%8A%A1
      */
-    #[RequestMapping(methods: "GET", path:"/test/crotnab")]
+    #[RequestMapping(methods: "GET", path: "/test/crotnab")]
     public function crontabCreated()
     {
         $param = [
             'method' => 'request',//计划任务列表
-            'args'   => [
+            'args' => [
                 'title' => 'test ',
                 'type' => 1,
                 'rule' => '*/3 * * * * *',
@@ -226,7 +226,7 @@ class TestController extends BaseController
                 'singleton' => 0, //是否单次执行 [0 是 1 不是]
             ],//参数
         ];
-        $result= \yzh52521\Task\Client::instance()->request($param);
+        $result = \yzh52521\Task\Client::instance()->request($param);
         return apiResponse($result);
 
 
@@ -240,5 +240,26 @@ class TestController extends BaseController
             ->setTextBody('欢迎您使用webman-mailer')
             ->send();
         return apiResponse([]);
+    }
+
+    public function testQueue()
+    {
+        //即时消费消息
+        $payload = new ProducerData();
+        //对应消费队列里的任务名称
+        $payload->setChannel('test');
+        //对应消费队列里的任务使用的数据
+        $payload->setQueueData([1, 2, 3, 4]);
+        //推入队列并且获取消息id
+        $id = Manager::getInstance()->push($payload);
+
+        //延迟消费消息
+        $payload_delay = new ProducerData();
+        $payload_delay->setChannel('test');
+        $payload_delay->setQueueData([6, 7, 8, 9]);
+        //设置60秒后执行的任务
+        $payload_delay->setDelayTime(60);
+        //推入队列并且获取消息id
+        $id = Manager::getInstance()->push($payload_delay);
     }
 }
