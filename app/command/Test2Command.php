@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package app\command
  * php webman test2:command
  */
-class TestCommand extends Command
+class Test2Command extends Command
 {
     protected static $defaultName = 'test2:command';
     protected static $defaultDescription = 'test2 command';

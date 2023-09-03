@@ -242,6 +242,9 @@ class TestController extends BaseController
         return apiResponse([]);
     }
 
+    /**
+     * https://github.com/nsnake/playcat-queue
+     */
     public function testQueue()
     {
         //即时消费消息
